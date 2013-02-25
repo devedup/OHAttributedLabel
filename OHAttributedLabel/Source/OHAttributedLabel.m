@@ -170,17 +170,17 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
 -(void)dealloc
 {
 	[self resetTextFrame]; // CFRelease the text frame
-
+    
 #if ! __has_feature(objc_arc)
     [_linksDetector release]; _linksDetector = nil;
     [_linkColor release]; _linkColor = nil;
 	[_highlightedLinkColor release]; _highlightedLinkColor = nil;
 	[_activeLink release]; _activeLink = nil;
-
+    
 	[_attributedText release]; _attributedText = nil;
     [_attributedTextWithLinks release]; _attributedTextWithLinks = nil;
 	[_customLinks release]; _customLinks = nil;
-
+    
 	[super dealloc];
 #endif
 }
@@ -284,7 +284,7 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
                  applyLinkStyle(result);
              }
          }];
-
+        
         // Automatically Detected Links
         if (plainText && (self.automaticallyAddLinksForType > 0))
         {
@@ -449,7 +449,7 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
 	
 	self.activeLink = [self linkAtPoint:pt];
 	_touchStartPoint = pt;
-
+    
 	if (_catchTouchesOnLinksOnTouchBegan)
     {
 		[self processActiveLink];
@@ -465,7 +465,7 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
     {
         UITouch* touch = [touches anyObject];
         CGPoint pt = [touch locationInView:self];
-
+        
         // Check that the link on touchEnd is the same as the link on touchBegan
 		NSTextCheckingResult* linkAtTouchesEnded = [self linkAtPoint:pt];
         BOOL closeToStart = (fabs(_touchStartPoint.x - pt.x) < 10 && fabs(_touchStartPoint.y - pt.y) < 10);
@@ -477,7 +477,7 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
             [self processActiveLink];
         }
 	}
-
+    
     // we're using activeLink to draw a highlight in -drawRect:, so force redraw
     self.activeLink = nil;
 	[self setNeedsDisplay];
@@ -784,7 +784,7 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
 	
 #if OHATTRIBUTEDLABEL_WARN_ABOUT_KNOWN_ISSUES
 	[self warnAboutKnownIssues_CheckLineBreakMode_FromXIB:NO];
-#endif	
+#endif
 }
 
 -(void)setCenterVertically:(BOOL)val
@@ -796,8 +796,14 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
 -(void)setAutomaticallyAddLinksForType:(NSTextCheckingTypes)types
 {
 	_automaticallyAddLinksForType = types;
-
-    NSDataDetector* dd = sharedReusableDataDetector(types);
+    
+    NSDataDetector* dd = nil;
+    if ([self.delegate respondsToSelector:@selector(attributedLabelDataDetector:)]) {
+        dd = [self.delegate attributedLabelDataDetector:self];
+    } else {
+        dd = sharedReusableDataDetector(types);
+    }
+    
     MRC_RELEASE(_linksDetector);
     _linksDetector = MRC_RETAIN(dd);
     [self setNeedsRecomputeLinksInText];
@@ -878,7 +884,7 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
         {
             NSLog(@"  (To avoid this warning, uncheck the 'Autoshrink' property in your XIB file)");
         }
-
+        
 	}
 }
 
@@ -896,7 +902,7 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
               "It will be ignored by OHAttributedLabel. See https://github.com/AliSoftware/OHAttributedLabel/issues/34");
         NSLog(@"  (To avoid this warning, set the numberOfLines property to 0)");
     }
-
+    
 	[super setNumberOfLines:nbLines];
 }
 #endif
