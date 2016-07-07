@@ -755,7 +755,7 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
 	[super setTextColor:color]; // will call setNeedsDisplay too
 }
 
--(void)setTextAlignment:(UITextAlignment)alignment
+-(void)setTextAlignment:(NSTextAlignment)alignment
 {
     if (_attributedText)
     {
@@ -769,7 +769,7 @@ NSDataDetector* sharedReusableDataDetector(NSTextCheckingTypes types)
 	[super setTextAlignment:alignment]; // will call setNeedsDisplay too
 }
 
--(void)setLineBreakMode:(UILineBreakMode)lineBreakMode
+-(void)setLineBreakMode:(NSLineBreakMode)lineBreakMode
 {
     if (_attributedText)
     {
